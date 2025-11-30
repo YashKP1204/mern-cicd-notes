@@ -1,0 +1,19 @@
+node_modules/
+*/node_modules/
+.env
+*/.env
+# Build files
+frontend/build/
+frontend/.eslintcache
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
