@@ -51,7 +51,7 @@ function App() {
   return (
     <div className="App">
       <div className="container">
-        <h1>Notes App Version 2 (This is a change in heading) </h1>
+        <h1>📝 My Awesome Notes App - CI/CD Works! 🚀</h1>
         
         <form onSubmit={addNote} className="note-form">
           <input

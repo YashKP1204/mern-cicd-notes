@@ -66,8 +66,18 @@ pipeline {
             steps {
                 echo 'Deploying application...'
                 script {
-                    bat 'docker-compose down || exit 0'
-                    bat 'docker-compose up -d'
+                    // Stop and remove old containers
+                    bat 'docker-compose -f docker-compose.prod.yml down || exit 0'
+            
+                    // Remove old images to force using new ones
+                    bat "docker rmi ${BACKEND_IMAGE}:latest || exit 0"
+                    bat "docker rmi ${FRONTEND_IMAGE}:latest || exit 0"
+            
+                    // Pull fresh images from Docker Hub
+                    bat 'docker-compose -f docker-compose.prod.yml pull'
+            
+                    // Start containers with new images
+                    bat 'docker-compose -f docker-compose.prod.yml up -d --force-recreate'
                 }
             }
         }
