@@ -66,19 +66,29 @@ pipeline {
             steps {
                 echo 'Deploying application...'
                 script {
-                    // Stop and remove old containers
-                    bat 'docker-compose -f docker-compose down || exit 0'
-            
-                    // Remove old images to force using new ones
+                    // Stop old containers
+                    bat 'docker-compose -f docker-compose.prod.yml down || exit 0'
+                    
+                    // Remove old local images to force fresh pull
                     bat "docker rmi ${BACKEND_IMAGE}:latest || exit 0"
                     bat "docker rmi ${FRONTEND_IMAGE}:latest || exit 0"
-            
+                    
                     // Pull fresh images from Docker Hub
-                    bat 'docker-compose -f docker-compose pull'
-            
-                    // Start containers with new images
-                    bat 'docker-compose -f docker-compose up -d --force-recreate'
+                    bat 'docker-compose -f docker-compose.prod.yml pull'
+                    
+                    // Start with fresh images
+                    bat 'docker-compose -f docker-compose.prod.yml up -d --force-recreate'
+                    
+                    echo 'Waiting for services to start...'
+                    bat 'timeout /t 10 /nobreak'
                 }
+            }
+        }
+        
+        stage('Health Check') {
+            steps {
+                echo 'Checking if services are running...'
+                bat 'docker ps'
             }
         }
     }
@@ -89,10 +99,12 @@ pipeline {
             bat 'docker logout || exit 0'
         }
         success {
-            echo 'Pipeline completed successfully!'
+            echo '✅ Pipeline completed successfully!'
+            echo "Deployed: ${BACKEND_IMAGE}:${IMAGE_TAG}"
+            echo "Access app at: http://localhost"
         }
         failure {
-            echo 'Pipeline failed!'
+            echo '❌ Pipeline failed!'
         }
     }
 }
