@@ -51,7 +51,7 @@ function App() {
   return (
     <div className="App">
       <div className="container">
-        <h1>📝 Notes App</h1>
+        <h1>📝 Notes App Version 2</h1>
         
         <form onSubmit={addNote} className="note-form">
           <input
