@@ -80,7 +80,7 @@ pipeline {
                     bat 'docker-compose -f docker-compose.prod.yml up -d --force-recreate'
                     
                     echo 'Waiting for services to start...'
-                    bat 'timeout /t 10 /nobreak'
+                    bat 'ping 127.0.0.1 -n 11 > nul'
                 }
             }
         }
