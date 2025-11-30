@@ -1,0 +1,140 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.App {
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: white;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+}
+
+.note-form {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  margin-bottom: 30px;
+}
+
+.note-form input,
+.note-form textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.note-form input:focus,
+.note-form textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.note-form button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.note-form button:hover {
+  transform: translateY(-2px);
+}
+
+.note-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.notes-list {
+  display: grid;
+  gap: 20px;
+}
+
+.no-notes {
+  text-align: center;
+  color: white;
+  font-size: 1.2rem;
+  padding: 40px;
+}
+
+.note-card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.note-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.note-card h3 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.note-card p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.note-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 10px;
+}
+
+.note-footer small {
+  color: #999;
+}
+
+.delete-btn {
+  padding: 8px 16px;
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.delete-btn:hover {
+  background: #ff3838;
+}
+
+
