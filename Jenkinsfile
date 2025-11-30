@@ -7,7 +7,7 @@ pipeline {
     
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
-        DOCKERHUB_USERNAME = 'ash1204'  // CHANGE THIS
+        DOCKERHUB_USERNAME = 'ash1204'
         IMAGE_TAG = "${BUILD_NUMBER}"
         BACKEND_IMAGE = "${DOCKERHUB_USERNAME}/notes-backend"
         FRONTEND_IMAGE = "${DOCKERHUB_USERNAME}/notes-frontend"
@@ -26,8 +26,8 @@ pipeline {
                 echo 'Building backend Docker image...'
                 script {
                     dir('backend') {
-                        sh "docker build -t ${BACKEND_IMAGE}:${IMAGE_TAG} ."
-                        sh "docker tag ${BACKEND_IMAGE}:${IMAGE_TAG} ${BACKEND_IMAGE}:latest"
+                        bat "docker build -t ${BACKEND_IMAGE}:${IMAGE_TAG} ."
+                        bat "docker tag ${BACKEND_IMAGE}:${IMAGE_TAG} ${BACKEND_IMAGE}:latest"
                     }
                 }
             }
@@ -38,8 +38,8 @@ pipeline {
                 echo 'Building frontend Docker image...'
                 script {
                     dir('frontend') {
-                        sh "docker build -t ${FRONTEND_IMAGE}:${IMAGE_TAG} ."
-                        sh "docker tag ${FRONTEND_IMAGE}:${IMAGE_TAG} ${FRONTEND_IMAGE}:latest"
+                        bat "docker build -t ${FRONTEND_IMAGE}:${IMAGE_TAG} ."
+                        bat "docker tag ${FRONTEND_IMAGE}:${IMAGE_TAG} ${FRONTEND_IMAGE}:latest"
                     }
                 }
             }
@@ -48,17 +48,17 @@ pipeline {
         stage('Login to DockerHub') {
             steps {
                 echo 'Logging in to Docker Hub...'
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                bat 'echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin'
             }
         }
         
         stage('Push Images') {
             steps {
                 echo 'Pushing images to Docker Hub...'
-                sh "docker push ${BACKEND_IMAGE}:${IMAGE_TAG}"
-                sh "docker push ${BACKEND_IMAGE}:latest"
-                sh "docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}"
-                sh "docker push ${FRONTEND_IMAGE}:latest"
+                bat "docker push ${BACKEND_IMAGE}:${IMAGE_TAG}"
+                bat "docker push ${BACKEND_IMAGE}:latest"
+                bat "docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}"
+                bat "docker push ${FRONTEND_IMAGE}:latest"
             }
         }
         
@@ -66,8 +66,8 @@ pipeline {
             steps {
                 echo 'Deploying application...'
                 script {
-                    sh 'docker-compose down || true'
-                    sh 'docker-compose up -d'
+                    bat 'docker-compose down || exit 0'
+                    bat 'docker-compose up -d'
                 }
             }
         }
@@ -76,7 +76,7 @@ pipeline {
     post {
         always {
             echo 'Logging out from Docker Hub...'
-            sh 'docker logout'
+            bat 'docker logout || exit 0'
         }
         success {
             echo 'Pipeline completed successfully!'
