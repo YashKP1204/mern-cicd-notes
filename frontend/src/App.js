@@ -1,101 +1,105 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/notes';
+import { AuthProvider, useAuth } from './context/AuthContext'; // Import useAuth here
+import { ThemeProvider } from './context/ThemeContext';
+import { NotesProvider } from './context/NotesContext';
 
-function App() {
-  const [notes, setNotes] = useState([]);
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [loading, setLoading] = useState(false);
+import ProtectedRoute from './utils/ProtectedRoute';
+import Login from './components/auth/Login';
+import Register from './components/auth/Register';
+import Dashboard from './pages/Dashboard';
+import Favorites from './pages/Favorites';
+import Archived from './pages/Archived';
+import Analytics from './pages/Analytics';
 
-  useEffect(() => {
-    fetchNotes();
-  }, []);
+// New component to handle routing *after* loading state is ready
+const AppRoutes = () => {
+  const { loading } = useAuth();
 
-  const fetchNotes = async () => {
-    try {
-      const response = await axios.get(API_URL);
-      setNotes(response.data);
-    } catch (error) {
-      console.error('Error fetching notes:', error);
-    }
-  };
-
-  const addNote = async (e) => {
-    e.preventDefault();
-    if (!title || !content) return;
-
-    setLoading(true);
-    try {
-      await axios.post(API_URL, { title, content });
-      setTitle('');
-      setContent('');
-      fetchNotes();
-    } catch (error) {
-      console.error('Error adding note:', error);
-    }
-    setLoading(false);
-  };
-
-  const deleteNote = async (id) => {
-    try {
-      await axios.delete(`${API_URL}/${id}`);
-      fetchNotes();
-    } catch (error) {
-      console.error('Error deleting note:', error);
-    }
-  };
+  // If the AuthContext is still checking localStorage, show a loading screen
+  if (loading) {
+    return <div className="loading-screen">Loading application...</div>;
+  }
 
   return (
     <div className="App">
-      <div className="container">
-        <h1>📝 My Awesome Notes App - CI/CD Works! 🚀</h1>
-        
-        <form onSubmit={addNote} className="note-form">
-          <input
-            type="text"
-            placeholder="Note Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-          <textarea
-            placeholder="Note Content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-            rows="4"
-          />
-          <button type="submit" disabled={loading}>
-            {loading ? 'Adding...' : 'Add Note'}
-          </button>
-        </form>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-        <div className="notes-list">
-          {notes.length === 0 ? (
-            <p className="no-notes">No notes yet. Create your first note!</p>
-          ) : (
-            notes.map(note => (
-              <div key={note._id} className="note-card">
-                <h3>{note.title}</h3>
-                <p>{note.content}</p>
-                <div className="note-footer">
-                  <small>{new Date(note.createdAt).toLocaleString()}</small>
-                  <button 
-                    onClick={() => deleteNote(note._id)}
-                    className="delete-btn"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
+        {/* Protected Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/favorites"
+          element={
+            <ProtectedRoute>
+              <Favorites />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/archived"
+          element={
+            <ProtectedRoute>
+              <Archived />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute>
+              <Analytics />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Default Redirect */}
+        <Route path="/" element={<Navigate to="/dashboard" />} />
+        {/* Wildcard route for 404s, redirects to dashboard */}
+        <Route path="*" element={<Navigate to="/dashboard" />} />
+      </Routes>
     </div>
+  );
+};
+
+
+function App() {
+  return (
+    <Router>
+      <ThemeProvider>
+        <AuthProvider> {/* AuthProvider must wrap AppRoutes to provide context */}
+          <NotesProvider>
+            <AppRoutes /> {/* Render the routes component here */}
+            
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored"
+            />
+          </NotesProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </Router>
   );
 }
 

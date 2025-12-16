@@ -1,41 +1,30 @@
 const express = require('express');
 const router = express.Router();
-const Note = require('../models/Notes');
+const { protect } = require('../middleware/auth');
+const {
+  getNotes,
+  getNote,
+  createNote,
+  updateNote,
+  deleteNote,
+  toggleFavorite,
+  toggleArchive,
+  getStats
+} = require('../controllers/notesController');
 
-// Get all notes
-router.get('/', async (req, res) => {
-  try {
-    const notes = await Note.find().sort({ createdAt: -1 });
-    res.json(notes);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+// All routes are protected (require authentication)
+router.use(protect);
 
-// Create note
-router.post('/', async (req, res) => {
-  console.log("Request Body:", req.body); // Debugging line
-  const note = new Note({
-    title: req.body.title,
-    content: req.body.content
-  });
+// Stats route (must be before /:id routes)
+router.get('/stats', getStats);
 
-  try {
-    const newNote = await note.save();
-    res.status(201).json(newNote);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+// CRUD routes
+router.route('/').get(getNotes).post(createNote);
 
-// Delete note
-router.delete('/:id', async (req, res) => {
-  try {
-    await Note.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Note deleted' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.route('/:id').get(getNote).put(updateNote).delete(deleteNote);
+
+// Special action routes
+router.put('/:id/favorite', toggleFavorite);
+router.put('/:id/archive', toggleArchive);
 
 module.exports = router;
