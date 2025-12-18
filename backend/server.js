@@ -25,7 +25,7 @@ console.log("api called from server.js");
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/notes', require('./routes/notes'));
+app.use('/api/notes', require('./routes/Notes'));
 app.use('/api/categories', require('./routes/categories'));
 
 // Health check route
