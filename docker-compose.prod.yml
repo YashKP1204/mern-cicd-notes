@@ -27,6 +27,8 @@ services:
   frontend:
     image: ash1204/notes-frontend:latest
     container_name: notes-frontend-prod
+    env_file:
+      - frontend/.env
     ports:
       - "8000:80"
     depends_on:
